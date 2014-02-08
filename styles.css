@@ -1,0 +1,74 @@
+
+body {
+	font-family: sans;
+}
+
+.cell {
+	width: 7px;
+	height: 7px;
+	float: left;
+	text-align: center;
+	padding: 0;
+	margin: 0;
+}
+
+.cell:hover {
+	outline: thin red solid;
+}
+
+button > img {
+	vertical-align: bottom;
+	margin-right: 0.3em;
+}
+
+#loading {
+	
+}
+
+#main {
+	display: inline-block;
+	border: thin black solid;
+	float: left;
+}
+
+
+#sidebar {
+	display: inline-block;
+	float: left;
+	margin-left: 1em;
+}
+
+#rules {
+	max-width: 400px;
+}
+
+#examples {
+
+}
+
+
+@media screen and (max-width: 1130px) {
+	#rules {
+		float: left;
+	}
+	#examples {
+		float: left;
+	}
+}
+
+#grid {
+	display: inline-block;
+	border: thin black solid;
+	min-height: 2em;
+}
+
+#grid > div {
+	padding: 0;
+	margin: 0;
+	height: 7px;
+}
+
+.black {
+	background-color: black;
+
+}
