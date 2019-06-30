@@ -40,6 +40,10 @@ button > img {
 	max-width: 400px;
 }
 
+#rules li {
+	margin: 1.3em 0;
+}
+
 @media screen and (max-width: 1130px) {
 	#rules {
 		float: left;
