@@ -242,13 +242,13 @@ automa.Game = function(width, height) {
 	this.Get = function(x, y) {
 		return cells.Get(x, y, 0);
 	}
-	
+
 	this.encodeGrid = function() {
-		var str = "";
 		var inrow = 0;
 		var xx, yy;
-		
 		var py = 0;
+		var singles = [];
+		var multiples = []
 		
 		cells.forEach(function(value, x, y, i) {
 			if (value > 0 && py === y) {
@@ -259,30 +259,64 @@ automa.Game = function(width, height) {
 				inrow++;
 			}
 			else {
-				if (inrow) {
-					str+="x"+xx+"y"+yy;
-					if (inrow > 1) str+="n"+inrow;
+				if (inrow == 1) {
+					singles.push({x: xx, y: yy})
+				}
+				if (inrow > 1) {
+					multiples.push({x: xx, y: yy, n: inrow})
+					
+				}
+				if (inrow > 0) {
 					xx = yy = inrow = 0;
 				}
 			}
 			py = y;
 		});
-		return str;
+		var buffer = new ArrayBuffer(4 + singles.length * 2 + multiples.length * 3);
+		var arrayview = new DataView(buffer);
+		arrayview.setUint16(0, singles.length)
+		arrayview.setUint16(2, multiples.length)
+
+		singles.forEach(function(value, i) {
+			var loc = 4 + i * 2;
+			arrayview.setUint8(loc, value.x);
+			arrayview.setUint8(loc+1, value.y);
+		});
+		multiples.forEach(function(value, i) {
+			var loc = 4 + 2 * singles.length + i * 3;
+			arrayview.setUint8(loc, value.x);
+			arrayview.setUint8(loc+1, value.y);
+			arrayview.setUint8(loc+2, value.n);
+		});
+		
+		return base64js.fromByteArray(new Uint8Array(buffer));
 	}
-	
+
 	this.fromEncoding = function(str) {
-		var coords = str.split("x");
-		coords.shift();
-		for (var i = 0; i < coords.length; i++) {
-			var coord = coords[i].split(/[yn]/);
-			var pos = parseInt(coord[0], 10) + parseInt(coord[1], 10) * width;
-			var num = parseInt(coord[2], 10) || 1;
-			
-			for (var j = pos; j < pos + num; j++) {
-				me.setAtIndex(j, 1);
-			} 
+		var arr = new Uint8Array(base64js.toByteArray(str))
+		var arrayview = new DataView(arr.buffer);
+		
+		var numSingles = arrayview.getUint16(0);
+		var numMultiples = arrayview.getUint16(2);
+
+		for (var i = 0; i < numSingles; i++) {
+			var loc = 4 + i * 2;
+			var x = arrayview.getUint8(loc);
+			var y = arrayview.getUint8(loc + 1);
+			me.Set(x, y, 1);
+		}
+
+		for (var i = 0; i < numMultiples; i++) {
+			var loc = 4 + 2 * numSingles + i * 3;
+			var x = arrayview.getUint8(loc);
+			var y = arrayview.getUint8(loc + 1);
+			var n = arrayview.getUint8(loc + 2);
+			for (var xx = x; xx < x + n; xx++) {
+				me.Set(xx, y, 1)
+			}
 		}
 	}
+
 
 	this.getWidth = function(){return width;};
 	this.getHeight = function(){return height;};
