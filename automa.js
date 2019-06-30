@@ -41,9 +41,6 @@ automa.NumberGrid = function(width, height) {
 	}
 	
 	this.getByIndex = function(i, def) {
-		//if (i < 0 or i>width*height) {
-		//	return null;
-		//}
 		if (cells[i] === undefined) return def;
 		return cells[i];
 	}
@@ -201,10 +198,8 @@ automa.Game = function(width, height) {
 		
 		cells.forEach(function(value, x, y, i) {
 			adjacencies.setAtIndex(i, adjacencies.getByIndex(i, 0) + adj_changes.getByIndex(i, 0));
-			//if (cell_changes.getByIndex(i) !== undefined) {
 			
 			return cell_changes.getByIndex(i);
-			//}
 		});
 	}
 	
@@ -288,13 +283,12 @@ automa.Game = function(width, height) {
 			} 
 		}
 	}
-	
 
 	this.getWidth = function(){return width;};
 	this.getHeight = function(){return height;};
 }
 
-automa.Pen = function(display, game) {
+automa.Pen = function(game) {
 	var mousedown = false;
 	var changedlist = [];
 	this.gridDown = function() {
@@ -322,14 +316,13 @@ automa.Pen = function(display, game) {
 }
 
 automa.Display = function(game) {
-	var me = this;
 	var width = game.getWidth();
 	var height = game.getHeight();
 	
 	var cells = new automa.NumberGrid(width, height);
 	var grid = document.getElementById("grid");
 	
-	var tool = new automa.Pen(this, game);
+	var tool = new automa.Pen(game);
 	
 	var row = document.createElement("div");
 	
@@ -342,7 +335,6 @@ automa.Display = function(game) {
 			$(cells.Get(x, y)).removeClass("black");
 		}
 	}
-	var changedlist = [];
 
 	grid.ondragstart = function() {return false;};
 	grid.oncontextmenu = function() { return false;};
@@ -355,8 +347,6 @@ automa.Display = function(game) {
 	$(window).mouseup(function() {
 		tool.windowUp();
 	});
-	
-	
 	
 	// Create the cells
 	var py = 0;
@@ -387,18 +377,16 @@ automa.Display = function(game) {
 	this.setCellSize = function(size) {
 		$(".cell").width(size).height(size);
 		$("#grid > div").height(size);
-	}
-	
+	}	
 }
-
 
 
 $(function() {
 	
 	var load = function() {
 		var game = new automa.Game(100, 100);
-		var display = new automa.Display(game);
-		//display.setCellSize("7px");
+		new automa.Display(game);
+
 		var ticker;
 		$("#go").click(function(e) {
 			if (!ticker) {
