@@ -74,3 +74,11 @@ button > img {
 	margin-right: auto;
 	max-width: 1130px;
 }
+
+#geturl {
+	width: 7em;
+}
+
+#gameurl {
+	width: calc(100% - 8em);
+}
